@@ -1,0 +1,26 @@
+import SwiftUI
+import Foundation
+
+class ViewFinder {
+    
+    static func buildViewFromViewInfo(viewInfo: ViewInfo) -> AnyView {
+          switch viewInfo.view.self {
+            {% for type in types.implementing.View %}
+               case is {{type.name}}.Type: return AnyView( {{type.name}}() )
+            {% endfor %}
+            default: return AnyView(EmptyView())
+        }
+    }
+    
+    static func getViewInfos() -> [ViewInfo] {
+        var myViewInfos: [ViewInfo] = [ViewInfo]()
+        
+        {% for type in types.implementing.View %}
+        if ("{{type.name}}" != "ContentView") {
+            myViewInfos.append(ViewInfo(id: "{{type.name}}", name: "{{type.name}}", view: {{type.name}}.self))
+        }
+        {% endfor %}
+        
+        return myViewInfos
+    }
+}
